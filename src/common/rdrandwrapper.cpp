@@ -12,7 +12,7 @@
 
 #include "rdrandwrapper.hpp"
 
-namespace RdRandWrapper {
+namespace Qrack {
 
 bool getRdRand(unsigned int* pv)
 {
@@ -51,12 +51,12 @@ bool RdRandom::SupportsRDRAND()
 #endif
 }
 
-double RdRandom::Next()
+real1 RdRandom::Next()
 {
-    double res = 0;
-    double part = 1;
 #if ENABLE_RDRAND
     unsigned int v;
+    real1 res = 0;
+    real1 part = 1;
     if (!getRdRand(&v)) {
         throw "Failed to get hardware RNG number.";
     }
@@ -96,4 +96,4 @@ double RdRandom::Next()
 #endif
 }
 
-} // namespace RdRandWrapper
+} // namespace Qrack

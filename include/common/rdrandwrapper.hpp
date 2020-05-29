@@ -26,8 +26,9 @@
 #if ENABLE_ANURAND
 #include "AnuRandom.hpp"
 #endif
+#include "qrack_types.hpp"
 
-namespace RdRandWrapper {
+namespace Qrack {
 
 bool getRdRand(unsigned int* pv);
 
@@ -41,8 +42,7 @@ public:
 #endif
 
     bool SupportsRDRAND();
-
-    double Next();
+    real1 Next();
 
 #if ENABLE_ANURAND
 private:
@@ -53,4 +53,4 @@ private:
     int dataOffset;
 #endif
 };
-} // namespace RdRandWrapper
+} // namespace Qrack
