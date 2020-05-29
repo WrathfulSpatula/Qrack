@@ -10,6 +10,8 @@
 // See LICENSE.md in the project root or https://www.gnu.org/licenses/lgpl-3.0.en.html
 // for details.
 
+#pragma once
+
 #if ENABLE_RDRAND
 
 #if _MSC_VER
@@ -21,7 +23,9 @@
 #include <immintrin.h>
 #endif
 
-#pragma once
+#if ENABLE_ANURAND
+#include "AnuRandom.hpp"
+#endif
 
 namespace RdRandWrapper {
 
@@ -29,8 +33,24 @@ bool getRdRand(unsigned int* pv);
 
 class RdRandom {
 public:
+#if ENABLE_ANURAND
+    RdRandom()
+        : didInit(false)
+        , isPageTwo(false)
+        , dataOffset(0){};
+#endif
+
     bool SupportsRDRAND();
 
     double Next();
+
+#if ENABLE_ANURAND
+private:
+    bool didInit;
+    bool isPageTwo;
+    AnuRandom::Data data1;
+    AnuRandom::Data data2;
+    int dataOffset;
+#endif
 };
 } // namespace RdRandWrapper

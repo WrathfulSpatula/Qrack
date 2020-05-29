@@ -44,6 +44,8 @@ bool RdRandom::SupportsRDRAND()
     return ((ecx & flag_RDRAND) == flag_RDRAND);
 #endif
 
+#elif ENABLE_ANURAND
+    return true;
 #else
     return false;
 #endif
@@ -51,9 +53,10 @@ bool RdRandom::SupportsRDRAND()
 
 double RdRandom::Next()
 {
-    unsigned int v;
     double res = 0;
     double part = 1;
+#if ENABLE_RDRAND
+    unsigned int v;
     if (!getRdRand(&v)) {
         throw "Failed to get hardware RNG number.";
     }
@@ -65,6 +68,32 @@ double RdRandom::Next()
         }
     }
     return res;
+#elif ENABLE_ANURAND
+    if (!didInit) {
+        AnuRandom rnd;
+        data1 = rnd.read();
+        data2 = rnd.read();
+        didInit = true;
+    }
+    if ((isPageTwo && (data2.size() - dataOffset) < 4) || (!isPageTwo && (data1.size() - dataOffset) < 4)) {
+        AnuRandom rnd;
+        if (isPageTwo) {
+            data1 = rnd.read();
+        } else {
+            data2 = rnd.read();
+        }
+        isPageTwo = !isPageTwo;
+        dataOffset = 0;
+    }
+    for (int i = 0; i < 4; i++) {
+        part /= 256;
+        res += part * (isPageTwo ? data2[dataOffset + i] : data1[dataOffset + i]);
+    }
+    dataOffset += 4;
+    return res;
+#else
+    return 0;
+#endif
 }
 
 } // namespace RdRandWrapper
